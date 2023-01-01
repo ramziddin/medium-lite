@@ -7,6 +7,7 @@ specifiers:
   express: ^4.18.2
   helmet: ^6.0.1
   nodemon: ^2.0.20
+  prisma: ^4.8.0
   typescript: ^4.9.4
 
 dependencies:
@@ -14,6 +15,7 @@ dependencies:
   express: 4.18.2
   helmet: 6.0.1
   nodemon: 2.0.20
+  prisma: 4.8.0
 
 devDependencies:
   '@types/express': 4.17.15
@@ -21,6 +23,11 @@ devDependencies:
   typescript: 4.9.4
 
 packages:
+
+  /@prisma/engines/4.8.0:
+    resolution: {integrity: sha512-A1Asn2rxZMlLAj1HTyfaCv0VQrLUv034jVay05QlqZg1qiHPeA3/pGTfNMijbsMYCsGVxfWEJuaZZuNxXGMCrA==}
+    requiresBuild: true
+    dev: false
 
   /@types/body-parser/1.19.2:
     resolution: {integrity: sha512-ALYone6pm6QmwZoAgeyNksccT9Q4AWZQ6PvfwR37GT6r6FWUPguq6sUmNGSMV2Wr761oQoBxwGGa6DR5o1DC9g==}
@@ -528,6 +535,15 @@ packages:
   /picomatch/2.3.1:
     resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
     engines: {node: '>=8.6'}
+    dev: false
+
+  /prisma/4.8.0:
+    resolution: {integrity: sha512-DWIhxvxt8f4h6MDd35mz7BJff+fu7HItW3WPDIEpCR3RzcOWyiHBbLQW5/DOgmf+pRLTjwXQob7kuTZVYUAw5w==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      '@prisma/engines': 4.8.0
     dev: false
 
   /proxy-addr/2.0.7:
