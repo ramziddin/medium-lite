@@ -20,6 +20,22 @@ postsRouter.get("/", async (req, res) => {
 
 postsRouter.post("/", authenticate, async (req, res) => {
   const { title, content } = req.body
+
+  const post = await prisma.post.create({
+    data: {
+      title,
+      content,
+      authorId: req.session.user!.id,
+    },
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      authorId: true,
+    },
+  })
+
+  res.json(post)
 })
 
 postsRouter.get("/:id", async (req, res) => {

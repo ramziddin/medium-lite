@@ -16,8 +16,18 @@ usersRouter.get("/:id", async (req, res) => {
 
   const user = await prisma.user.findUnique({
     where: { id },
-    select: { id: true, name: true, email: true, posts: true },
+    select: { id: true, name: true, email: true },
   })
 
   res.json(user)
+})
+
+usersRouter.get("/:id/posts", async (req, res) => {
+  const authorId = Number(req.params.id)
+
+  const posts = await prisma.post.findMany({
+    where: { authorId },
+  })
+
+  res.json(posts)
 })

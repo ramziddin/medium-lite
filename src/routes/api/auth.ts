@@ -61,6 +61,5 @@ authRouter.post("/signup", async (req, res) => {
 })
 
 authRouter.get("/logout", async (req, res) => {
-  req.session.user = undefined
-  res.end()
+  req.session.destroy(() => res.end())
 })
