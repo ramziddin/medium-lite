@@ -1,17 +1,28 @@
+import cookieParser from "cookie-parser"
 import dotenv from "dotenv"
-import helmet from "helmet"
 import express from "express"
+import session from "express-session"
+import helmet from "helmet"
 import { apiRouter } from "./routes/api"
 
 dotenv.config()
 
-const { PORT } = process.env
+const { PORT, SESSION_SECRET } = process.env
 
 const app = express()
 
-app.use(helmet())
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+app.use(cookieParser())
+app.use(helmet())
+app.use(
+  session({
+    secret: SESSION_SECRET!,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: true },
+  })
+)
 app.use("/api", apiRouter)
 
 app.listen(PORT)

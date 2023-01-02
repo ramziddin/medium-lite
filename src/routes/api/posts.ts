@@ -1,4 +1,5 @@
 import { Router } from "express"
+import { authenticate } from "../../middlewares/authenticate"
 import { prisma } from "../../services/prisma"
 
 export const postsRouter = Router()
@@ -17,7 +18,7 @@ postsRouter.get("/", async (req, res) => {
   res.json(posts)
 })
 
-postsRouter.post("/", async (req, res) => {
+postsRouter.post("/", authenticate, async (req, res) => {
   const { title, content } = req.body
 })
 
@@ -37,6 +38,6 @@ postsRouter.get("/:id", async (req, res) => {
   res.json(post)
 })
 
-postsRouter.put("/:id", async (req, res) => {})
+postsRouter.put("/:id", authenticate, async (req, res) => {})
 
-postsRouter.delete("/:id", async (req, res) => {})
+postsRouter.delete("/:id", authenticate, async (req, res) => {})
