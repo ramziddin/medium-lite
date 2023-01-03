@@ -1,33 +1,28 @@
 import { Router } from "express"
-import { prisma } from "../../services/prisma"
+import { StatusCodes } from "http-status-codes"
+import { getManyUsers, getUniqueUser } from "../../services/users"
 
 export const usersRouter = Router()
 
 usersRouter.get("/", async (req, res) => {
-  const users = await prisma.user.findMany({
-    select: { id: true, name: true, email: true },
-  })
-
-  res.json(users)
+  const users = await getManyUsers()
+  res.status(StatusCodes.OK).json(users)
 })
 
 usersRouter.get("/:id", async (req, res) => {
   const id = Number(req.params.id)
 
-  const user = await prisma.user.findUnique({
-    where: { id },
-    select: { id: true, name: true, email: true },
-  })
+  if (typeof id !== "number" || isNaN(id)) {
+    return res
+      .status(StatusCodes.BAD_REQUEST)
+      .json({ error: "Expected numeric id" })
+  }
 
-  res.json(user)
-})
+  const user = await getUniqueUser(id)
 
-usersRouter.get("/:id/posts", async (req, res) => {
-  const authorId = Number(req.params.id)
+  if (!user) {
+    return res.status(StatusCodes.NOT_FOUND).json({ error: "User not found" })
+  }
 
-  const posts = await prisma.post.findMany({
-    where: { authorId },
-  })
-
-  res.json(posts)
+  res.status(StatusCodes.OK).json(user)
 })

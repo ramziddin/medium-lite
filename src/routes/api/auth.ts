@@ -1,10 +1,11 @@
 import { Router } from "express"
-import { compareHash, hash } from "../../services/auth"
 import { prisma } from "../../services/prisma"
 import { User as PrismaUser } from "@prisma/client"
 import { StatusCodes } from "http-status-codes"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime"
 import { PrismaError } from "prisma-error-enum"
+import { validate as validateEmail } from "email-validator"
+import bcrypt from "bcrypt"
 
 declare module "express-session" {
   interface SessionData {
@@ -12,10 +13,39 @@ declare module "express-session" {
   }
 }
 
+export const hash = (data: string) => bcrypt.hash(data, 10)
+
+export const compareHash = (data: string, hash: string) =>
+  bcrypt.compare(data, hash)
+
 export const authRouter = Router()
 
 authRouter.post("/login", async (req, res) => {
   const { email, password } = req.body
+
+  if (typeof email !== "string") {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      error: "Missing email",
+    })
+  }
+
+  if (!validateEmail(email)) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      error: "Invalid email format",
+    })
+  }
+
+  if (typeof password !== "string") {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      error: "Missing password",
+    })
+  }
+
+  if (password.length < 4) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      error: "Password should be longer than 3 characters",
+    })
+  }
 
   const user = await prisma.user.findUnique({
     where: {
@@ -39,6 +69,36 @@ authRouter.post("/login", async (req, res) => {
 authRouter.post("/signup", async (req, res) => {
   const { name, email, password } = req.body
 
+  if (typeof name !== "string") {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      error: "Missing name",
+    })
+  }
+
+  if (typeof email !== "string") {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      error: "Missing email",
+    })
+  }
+
+  if (!validateEmail(email)) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      error: "Invalid email format",
+    })
+  }
+
+  if (typeof password !== "string") {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      error: "Missing password",
+    })
+  }
+
+  if (password.length < 4) {
+    return res.status(StatusCodes.BAD_REQUEST).json({
+      error: "Password should be longer than 3 characters",
+    })
+  }
+
   try {
     const user = await prisma.user.create({
       data: {
@@ -54,7 +114,9 @@ authRouter.post("/signup", async (req, res) => {
   } catch (e) {
     if (e instanceof PrismaClientKnownRequestError) {
       if (e.code === PrismaError.UniqueConstraintViolation) {
-        res.status(StatusCodes.CONFLICT).end()
+        res
+          .status(StatusCodes.CONFLICT)
+          .json({ error: "Email is already in use" })
       }
     }
   }
